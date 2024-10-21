@@ -15,16 +15,12 @@ export function useMovies(query) {
 
       async function fetchMovies() {
         try {
-          setIsLoading(true);
-          setError("");
-
           const res = await fetch(
             `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
             { signal: controller.signal }
           );
 
-          if (!res.ok)
-            throw new Error("Something went wrong with fetching movies");
+          if (!res.ok) throw new Error("Network response was not ok");
 
           const data = await res.json();
           if (data.Response === "False") throw new Error("Movie not found");
@@ -32,10 +28,8 @@ export function useMovies(query) {
           setMovies(data.Search);
           setError("");
         } catch (err) {
-          if (err.name !== "AbortError") {
-            console.log(err.message);
-            setError(err.message);
-          }
+          console.log("Fetch error: ", err.message); // Add this to log errors
+          setError(err.message);
         } finally {
           setIsLoading(false);
         }
